@@ -1,0 +1,27 @@
+{
+    "hooks": {
+        "PostToolUse": [
+            {
+                "matcher": "Write|Edit",
+                "hooks": [
+                    {
+                        "type": "command",
+                        "command": "bash \"$CLAUDE_PROJECT_DIR/.claude/hooks/format-and-lint.sh\"",
+                        "timeout": 120,
+                        "statusMessage": "Formatting and linting..."
+                    }
+                ]
+            }
+        ],
+        "UserPromptSubmit": [
+            {
+                "hooks": [
+                    {
+                        "type": "command",
+                        "command": "echo '{\"hookSpecificOutput\":{\"hookEventName\":\"UserPromptSubmit\",\"additionalContext\":\"End your final reply to this request with a crisp \\\"Next Steps\\\" section: 2-4 short bullets on what you think should be done next, most important first.\"}}'"
+                    }
+                ]
+            }
+        ]
+    }
+}
