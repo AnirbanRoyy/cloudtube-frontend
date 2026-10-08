@@ -1,5 +1,11 @@
-import { currentChannel, videos } from "@/lib/mock-data";
-import type { ChannelStats, Video } from "@/lib/types";
+import {
+    currentChannel,
+    likedVideos,
+    subscribedChannels,
+    videos,
+    watchHistory,
+} from "@/lib/mock-data";
+import type { Channel, ChannelStats, HistoryEntry, Video } from "@/lib/types";
 
 // Mock data layer. Signatures mirror the future /api/v1 calls so pages
 // don't change when this is swapped for real fetches.
@@ -28,4 +34,24 @@ export async function getChannelStats(): Promise<ChannelStats> {
 
 export async function getCurrentUser() {
     return currentChannel;
+}
+
+export async function getSubscribedChannels(): Promise<Channel[]> {
+    return subscribedChannels;
+}
+
+/** Published videos from subscribed channels, newest first. */
+export async function getSubscriptionFeed(): Promise<Video[]> {
+    const ids = new Set(subscribedChannels.map((c) => c.id));
+    return videos
+        .filter((v) => v.isPublished && ids.has(v.owner.id))
+        .sort((a, b) => b.createdAt.localeCompare(a.createdAt));
+}
+
+export async function getWatchHistory(): Promise<HistoryEntry[]> {
+    return watchHistory;
+}
+
+export async function getLikedVideos(): Promise<Video[]> {
+    return likedVideos;
 }

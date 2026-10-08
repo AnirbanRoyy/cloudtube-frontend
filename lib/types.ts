@@ -20,6 +20,11 @@ export type Video = {
     owner: Channel;
 };
 
+export type HistoryEntry = {
+    video: Video;
+    watchedAt: string;
+};
+
 export type ChannelStats = {
     totalViews: number;
     subscribers: number;

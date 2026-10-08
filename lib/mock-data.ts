@@ -1,6 +1,6 @@
-import type { Channel, Video } from "@/lib/types";
+import type { Channel, HistoryEntry, Video } from "@/lib/types";
 
-const channels: Channel[] = [
+export const channels: Channel[] = [
     {
         id: "c1",
         username: "codewithana",
@@ -72,3 +72,27 @@ export const videos: Video[] = titles.map((title, i) => ({
     createdAt: new Date(Date.now() - ages[i] * HOUR).toISOString(),
     owner: channels[i % channels.length],
 }));
+
+/** Channels the current user follows (everyone except themselves). */
+export const subscribedChannels: Channel[] = channels.filter(
+    (c) => c.id !== currentChannel.id
+);
+
+const byId = (ids: string[]) =>
+    ids.map((id) => videos.find((v) => v.id === id)!);
+
+/** Most recently watched first. */
+export const watchHistory: HistoryEntry[] = [
+    ["v3", 1],
+    ["v2", 5],
+    ["v6", 22],
+    ["v4", 30],
+    ["v8", 55],
+    ["v12", 100],
+    ["v7", 400],
+].map(([id, hoursAgo]) => ({
+    video: byId([id as string])[0],
+    watchedAt: new Date(Date.now() - (hoursAgo as number) * HOUR).toISOString(),
+}));
+
+export const likedVideos: Video[] = byId(["v6", "v3", "v8", "v2", "v10"]);
