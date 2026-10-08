@@ -5,7 +5,7 @@ import { StatsCards } from "@/components/dashboard/stats-cards";
 import { VideosTable } from "@/components/dashboard/videos-table";
 import { buttonVariants } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { getChannelStats, getCurrentUser, getMyVideos } from "@/lib/api";
+import { getChannelStats, requireUser, getMyVideos } from "@/lib/api";
 
 export const metadata = { title: "Dashboard · CloudTube" };
 
@@ -13,7 +13,7 @@ export default async function DashboardPage() {
     const [stats, videos, user] = await Promise.all([
         getChannelStats(),
         getMyVideos(),
-        getCurrentUser(),
+        requireUser(),
     ]);
 
     return (

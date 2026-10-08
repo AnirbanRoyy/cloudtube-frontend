@@ -19,9 +19,10 @@ import {
     DropdownMenuSeparator,
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { LIVE, logout } from "@/lib/auth-client";
 import type { Channel } from "@/lib/types";
 
-export function UserMenu({ user }: { user: Channel }) {
+export function UserMenu({ user }: Readonly<{ user: Channel }>) {
     const router = useRouter();
 
     return (
@@ -50,9 +51,19 @@ export function UserMenu({ user }: { user: Channel }) {
                     Dashboard
                 </DropdownMenuItem>
                 <DropdownMenuItem
-                    onClick={() => {
-                        toast.success("Signed out (mock)");
-                        router.push("/login");
+                    onClick={async () => {
+                        try {
+                            if (LIVE) await logout();
+                            toast.success("Signed out");
+                            router.push("/login");
+                            router.refresh();
+                        } catch (err) {
+                            toast.error(
+                                err instanceof Error
+                                    ? err.message
+                                    : "Could not sign out"
+                            );
+                        }
                     }}
                 >
                     <HugeiconsIcon icon={Logout01Icon} strokeWidth={2} />

@@ -5,7 +5,7 @@ import { UserAvatar } from "@/components/user-avatar";
 import { VideoGrid } from "@/components/video-grid";
 import { buttonVariants } from "@/components/ui/button";
 import {
-    getCurrentUser,
+    requireUser,
     getLikedVideos,
     getSubscribedChannels,
     getWatchHistory,
@@ -16,7 +16,10 @@ export const metadata = { title: "You · CloudTube" };
 
 const PREVIEW = 4;
 
-function SectionHeader({ title, href }: Readonly<{ title: string; href: string }>) {
+function SectionHeader({
+    title,
+    href,
+}: Readonly<{ title: string; href: string }>) {
     return (
         <div className="flex items-center justify-between">
             <h2 className="text-lg font-medium">{title}</h2>
@@ -29,7 +32,7 @@ function SectionHeader({ title, href }: Readonly<{ title: string; href: string }
 
 export default async function YouPage() {
     const [user, history, liked, channels] = await Promise.all([
-        getCurrentUser(),
+        requireUser(),
         getWatchHistory(),
         getLikedVideos(),
         getSubscribedChannels(),

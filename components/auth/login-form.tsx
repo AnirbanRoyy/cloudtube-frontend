@@ -17,6 +17,7 @@ import {
     CardTitle,
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
+import { LIVE, login } from "@/lib/auth-client";
 
 const schema = z.object({
     identifier: z.string().trim().min(1, "Enter your username or email"),
@@ -45,11 +46,20 @@ export function LoginForm() {
         }
         setErrors({});
         setPending(true);
-        // TODO: POST /api/v1/users/login once the backend is wired up
-        await new Promise((r) => setTimeout(r, 600));
-        setPending(false);
-        toast.success("Signed in (mock)");
-        router.push("/");
+        try {
+            if (LIVE) {
+                await login(parsed.data.identifier, parsed.data.password);
+            } else {
+                await new Promise((r) => setTimeout(r, 600));
+            }
+            toast.success("Signed in");
+            router.push("/");
+            router.refresh();
+        } catch (err) {
+            toast.error(err instanceof Error ? err.message : "Sign in failed");
+        } finally {
+            setPending(false);
+        }
     }
 
     return (

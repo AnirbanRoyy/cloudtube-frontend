@@ -17,6 +17,7 @@ import {
     CardTitle,
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
+import { LIVE, register } from "@/lib/auth-client";
 
 const MAX_IMAGE_BYTES = 5 * 1024 * 1024;
 
@@ -52,9 +53,8 @@ export function SignupForm() {
 
     async function onSubmit(e: React.FormEvent<HTMLFormElement>) {
         e.preventDefault();
-        const parsed = schema.safeParse(
-            Object.fromEntries(new FormData(e.currentTarget))
-        );
+        const formData = new FormData(e.currentTarget);
+        const parsed = schema.safeParse(Object.fromEntries(formData));
         if (!parsed.success) {
             const flat = parsed.error.flatten().fieldErrors as Record<
                 string,
@@ -69,11 +69,26 @@ export function SignupForm() {
         }
         setErrors({});
         setPending(true);
-        // TODO: POST /api/v1/users (multipart: avatar + coverImage) once the backend is wired up
-        await new Promise((r) => setTimeout(r, 800));
-        setPending(false);
-        toast.success("Account created (mock)");
-        router.push("/login");
+        try {
+            if (LIVE) {
+                // Backend rejects an empty coverImage part, so drop it.
+                const cover = formData.get("coverImage");
+                if (cover instanceof File && cover.size === 0) {
+                    formData.delete("coverImage");
+                }
+                await register(formData);
+            } else {
+                await new Promise((r) => setTimeout(r, 800));
+            }
+            toast.success("Account created. Sign in to continue.");
+            router.push("/login");
+        } catch (err) {
+            toast.error(
+                err instanceof Error ? err.message : "Could not create account"
+            );
+        } finally {
+            setPending(false);
+        }
     }
 
     return (
