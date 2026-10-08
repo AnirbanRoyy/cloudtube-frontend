@@ -1,19 +1,22 @@
 import { VideoRow } from "@/components/video-row";
 import { getWatchHistory } from "@/lib/api";
-import { timeAgo } from "@/lib/format";
 import type { HistoryEntry } from "@/lib/types";
 
 export const metadata = { title: "Watch history · CloudTube" };
 
 const DAY = 86_400_000;
 
+function dayLabel(age: number) {
+    if (age < DAY) return "Today";
+    if (age < 2 * DAY) return "Yesterday";
+    return "Earlier";
+}
+
 function groupByDay(history: HistoryEntry[]) {
     const now = Date.now();
     const groups = new Map<string, HistoryEntry[]>();
     for (const entry of history) {
-        const age = now - new Date(entry.watchedAt).getTime();
-        const label =
-            age < DAY ? "Today" : age < 2 * DAY ? "Yesterday" : "Earlier";
+        const label = dayLabel(now - new Date(entry.watchedAt).getTime());
         groups.set(label, [...(groups.get(label) ?? []), entry]);
     }
     return groups;
@@ -35,12 +38,8 @@ export default async function HistoryPage() {
                 [...groups].map(([label, entries]) => (
                     <section key={label} className="space-y-4">
                         <h2 className="text-lg font-medium">{label}</h2>
-                        {entries.map(({ video, watchedAt }) => (
-                            <VideoRow
-                                key={video.id}
-                                video={video}
-                                meta={`Watched ${timeAgo(watchedAt)}`}
-                            />
+                        {entries.map(({ video }) => (
+                            <VideoRow key={video.id} video={video} />
                         ))}
                     </section>
                 ))

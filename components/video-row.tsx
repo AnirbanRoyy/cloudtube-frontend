@@ -5,10 +5,7 @@ import { formatDuration, formatViews, timeAgo } from "@/lib/format";
 import type { Video } from "@/lib/types";
 
 /** Horizontal video layout used by list pages (history, liked videos). */
-export function VideoRow({
-    video,
-    meta,
-}: Readonly<{ video: Video; meta?: string }>) {
+export function VideoRow({ video }: Readonly<{ video: Video }>) {
     return (
         <div className="flex gap-4">
             <Link
@@ -42,9 +39,6 @@ export function VideoRow({
                 <p className="text-xs text-muted-foreground">
                     {formatViews(video.views)} · {timeAgo(video.createdAt)}
                 </p>
-                {meta ? (
-                    <p className="mt-1 text-xs text-muted-foreground">{meta}</p>
-                ) : null}
                 <p className="mt-2 line-clamp-2 hidden text-xs text-muted-foreground sm:block">
                     {video.description}
                 </p>
